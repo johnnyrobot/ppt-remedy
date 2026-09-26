@@ -1,0 +1,14 @@
+{
+  "name": "@ppt-remedy/report",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ppt-remedy/contracts": "0.1.0",
+    "@ppt-remedy/rules": "0.1.0"
+  }
+}

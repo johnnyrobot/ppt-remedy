@@ -1,0 +1,84 @@
+// PowerPoint Accessibility Remediator: one Worker serving the static frontend and the
+// same-origin /api/v1/* gateway (spec §20). Schema checked against wrangler 4.139.0's
+// config-schema.json and https://developers.cloudflare.com/workers/static-assets/binding/.
+//
+// Secrets are NEVER set here. TURNSTILE_SECRET comes from `.dev.vars` locally (see
+// .dev.vars.example) and from `wrangler secret put TURNSTILE_SECRET --env production`.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "ppt-remedy",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-20",
+
+  "assets": {
+    "directory": "../web/dist",
+    "binding": "ASSETS",
+    // Only API paths invoke the Worker; all other traffic is served directly by the
+    // asset layer, so static/manual use does not consume dynamic Worker requests.
+    "run_worker_first": ["/api/*"],
+    "not_found_handling": "single-page-application"
+  },
+
+  // Workers AI binding. Only used when AI_ADAPTER is "workers-ai".
+  "ai": { "binding": "AI" },
+
+  // Regional, per-location IP throttle (10 attempts / 60 s). namespace_id is an
+  // account-unique positive integer chosen by the operator; it is not a secret.
+  // https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/
+  "ratelimits": [
+    { "name": "AI_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } }
+  ],
+
+  "secrets": { "required": ["TURNSTILE_SECRET"] },
+
+  // Development defaults: AI off, deterministic mock adapter, loopback origins and
+  // Cloudflare's documented always-pass Turnstile TEST site key
+  // (https://developers.cloudflare.com/turnstile/troubleshooting/testing/).
+  "vars": {
+    "AI_ENABLED": "false",
+    "AI_ADAPTER": "mock",
+    "AI_MODEL": "@cf/meta/llama-3.2-11b-vision-instruct",
+    "ALLOWED_ORIGINS": "http://localhost:8787,http://localhost:5173",
+    "BUILD_SHA": "dev",
+    "PROMPT_VERSION": "alt-text-v1",
+    "RULES_VERSION": "0.1.0",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA"
+  },
+
+  // No content logs by default (spec §20 runbook step 6). The Worker itself logs only
+  // configuration errors; enable platform logs deliberately after documenting retention.
+  "observability": { "enabled": false },
+
+  "env": {
+    "production": {
+      // Deployed as "ppt-remedy-production": a separate Worker from development (§20).
+      "assets": {
+        "directory": "../web/dist",
+        "binding": "ASSETS",
+        "run_worker_first": ["/api/*"],
+        "not_found_handling": "single-page-application"
+      },
+      // Bindings are not inherited by named environments, so they are repeated here.
+      "ai": { "binding": "AI" },
+      "ratelimits": [
+        { "name": "AI_RATE_LIMITER", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } }
+      ],
+      "secrets": { "required": ["TURNSTILE_SECRET"] },
+      "vars": {
+        // Kill switch stays off until the gateway tests pass on staging (§20 runbook).
+        "AI_ENABLED": "false",
+        "AI_ADAPTER": "workers-ai",
+        "AI_MODEL": "@cf/meta/llama-3.2-11b-vision-instruct",
+        // REPLACE with the exact production origin(s), e.g. https://ppt-remedy.<account>.workers.dev
+        "ALLOWED_ORIGINS": "https://REPLACE-WITH-PRODUCTION-ORIGIN.example",
+        // Set by CI to the release commit SHA.
+        "BUILD_SHA": "REPLACE-WITH-BUILD-SHA",
+        "PROMPT_VERSION": "alt-text-v1",
+        "RULES_VERSION": "0.1.0",
+        // REPLACE with the production Turnstile widget's public site key.
+        "TURNSTILE_SITE_KEY": "REPLACE-WITH-PRODUCTION-SITE-KEY"
+      },
+      "observability": { "enabled": false }
+    }
+  }
+}

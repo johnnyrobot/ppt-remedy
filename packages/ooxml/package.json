@@ -1,0 +1,15 @@
+{
+  "name": "@ppt-remedy/ooxml",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ppt-remedy/contracts": "0.1.0",
+    "@xmldom/xmldom": "0.9.12",
+    "fflate": "0.8.3"
+  }
+}

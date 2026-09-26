@@ -1,0 +1,19 @@
+{
+  "name": "@ppt-remedy/api",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ppt-remedy/contracts": "0.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260925.1",
+    "wrangler": "4.139.0"
+  }
+}

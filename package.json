@@ -1,0 +1,33 @@
+{
+  "name": "ppt-remedy",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Free, open-source PowerPoint accessibility remediation software.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12 <23"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @ppt-remedy/web",
+    "dev": "npm run dev -w @ppt-remedy/web",
+    "dev:api": "npm run dev -w @ppt-remedy/api",
+    "typecheck": "tsc -p tsconfig.json && tsc -p apps/api/tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "fixtures": "python3 fixtures/generate.py",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "22.20.4",
+    "jsdom": "30.1.1",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@ppt-remedy/rules",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ppt-remedy/contracts": "0.1.0"
+  },
+  "devDependencies": {
+    "@ppt-remedy/ooxml": "0.1.0"
+  }
+}

@@ -1,0 +1,8 @@
+# Copy to apps/api/.dev.vars for `wrangler dev` (.dev.vars is git-ignored).
+# Cloudflare's documented always-pass Turnstile TEST secret; it accepts any token and is
+# rejected by the gateway unless every ALLOWED_ORIGINS entry is a loopback origin.
+# https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+
+# Uncomment to exercise the deterministic mock adapter locally (AI is off by default).
+# AI_ENABLED=true
